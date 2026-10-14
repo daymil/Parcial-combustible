@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Combustibles en Panamá | Julio–Septiembre 2026</title>
+<style>
+:root{--ink:#17243b;--muted:#64748b;--paper:#f4f7fb;--line:#dbe3ef;--blue:#2855d9;--teal:#008b8b;--orange:#e58b24;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:26px 18px 42px}
+header{background:linear-gradient(125deg,#17243b,#2855d9);color:white;padding:28px;border-radius:24px;position:relative;overflow:hidden}
+header:after{content:"₿";font-size:170px;line-height:1;position:absolute;right:25px;top:-25px;opacity:.08;font-weight:900}
+.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:.75rem;font-weight:800;opacity:.8}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);line-height:1.08;margin:.6rem 0}header p{max-width:680px;color:#e0e8ff;margin-bottom:0}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:22px;margin-top:18px;box-shadow:0 8px 28px #243b6310}
+.toprow{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+h2{font-size:1.15rem;margin:0 0 5px}.muted{color:var(--muted);font-size:.9rem}
+.controls{display:flex;gap:8px;flex-wrap:wrap}.monthbtn{border:1px solid var(--line);background:#fff;padding:10px 16px;border-radius:999px;font-weight:750;color:var(--ink);cursor:pointer}
+.monthbtn[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:white}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.metric{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fbfcff}
+.metric .name{font-size:.87rem;color:var(--muted);font-weight:700}.price{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:850;letter-spacing:-.04em;margin:5px 0}.unit{font-size:.78rem;color:var(--muted)}
+.change{font-size:.84rem;font-weight:750;margin-top:8px}.up{color:#b45309}.down{color:#087f5b}.flat{color:var(--muted)}
+.visual{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);gap:22px;align-items:center;margin-top:22px}
+.chart{display:flex;align-items:flex-end;justify-content:space-around;gap:16px;min-height:250px;padding:20px 8px 4px;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to top,transparent 0,transparent 48px,#e9eef6 49px,#e9eef6 50px);border-radius:12px 12px 0 0}
+.barcol{flex:1;max-width:130px;text-align:center;display:flex;flex-direction:column;justify-content:flex-end;height:230px;gap:7px}
+.bar{width:min(66px,70%);margin:0 auto;border-radius:10px 10px 3px 3px;min-height:8px;transition:height .35s ease}
+.barlabel{font-size:.78rem;font-weight:800}.barname{font-size:.8rem;color:var(--muted);font-weight:700}
+.insight{background:#f0f5ff;border-radius:16px;padding:18px}.insight strong{display:block;font-size:1.05rem;margin-bottom:8px}.insight p{margin:0 0 12px;color:#41516d;font-size:.92rem}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-variant-numeric:tabular-nums}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{font-size:.8rem;color:var(--muted)}
+.note{font-size:.82rem;color:var(--muted);margin-top:14px}.foot{font-size:.85rem;color:var(--muted);margin:18px 4px 0}
+@media(max-width:700px){.cards{grid-template-columns:1fr}.visual{grid-template-columns:1fr}.chart{min-height:220px}.barcol{height:205px}}
+</style>
+</head>
+<body><main class="wrap">
+<header>
+<div class="kicker">Panel interactivo · Panamá y Colón</div>
+<h1>La ruta del combustible</h1>
+<p>Julio–septiembre de 2026: compara gasolina de 95 octanos, gasolina de 91 octanos y diésel ULS. Selecciona un mes para explorar los valores de referencia y cómo cambiaron frente al mes anterior.</p>
+</header>
+<section class="panel">
+<div class="toprow"><div><h2>Explora por mes</h2><div class="muted">Precios máximos de referencia, en balboas por litro</div></div>
+<div class="controls" role="group" aria-label="Seleccionar mes">
+<button class="monthbtn" data-month="0" aria-pressed="true">Julio</button><button class="monthbtn" data-month="1" aria-pressed="false">Agosto</button><button class="monthbtn" data-month="2" aria-pressed="false">Septiembre</button>
+</div></div>
+<div class="cards" id="cards"></div>
+<div class="visual">
+<div><h2 id="chartTitle">Comparación de julio</h2><div class="muted">Longitud de las barras proporcional al precio por litro</div><div class="chart" id="chart" aria-label="Gráfico de barras"></div></div>
+<aside class="insight" id="insight"></aside>
+</div>
+</section>
+<section class="panel">
+<h2>Tabla de comparación rápida</h2><div class="muted">Los valores permiten ver el cambio entre los tres meses seleccionados.</div>
+<table><thead><tr><th>Mes</th><th>Gasolina 95</th><th>Gasolina 91</th><th>Diésel ULS</th></tr></thead><tbody id="tbody"></tbody></table>
+<p class="note">Importante: son valores mensuales de referencia para la visualización, no promedios mensuales oficiales. La Secretaría Nacional de Energía actualiza los precios máximos por períodos de aproximadamente 14 días, por lo que los precios dentro de un mismo mes pueden variar.</p>
+</section>
+<p class="foot">Proyecto educativo · Unidad: B/. por litro · Localidad de referencia: Panamá y Colón.</p>
+</main>
+<script>
+const data=[
+ {month:"Julio",values:[1.170,1.110,1.090]},
+ {month:"Agosto",values:[1.226,1.160,1.353]},
+ {month:"Septiembre",values:[1.384,1.287,1.530]}
+];
+const names=["Gasolina 95","Gasolina 91","Diésel ULS"], colors=["#2855d9","#008b8b","#e58b24"];
+const fmt=v=>"B/."+v.toFixed(3);
+function render(i){
+ const d=data[i],prev=data[i-1];
+ document.querySelectorAll(".monthbtn").forEach((b,j)=>b.setAttribute("aria-pressed",String(i===j)));
+ document.getElementById("cards").innerHTML=d.values.map((v,j)=>{
+  let change=prev?(v-prev.values[j]):null, pct=prev?change/prev.values[j]*100:null;
+  let c=change===null?"flat":change>0?"up":change<0?"down":"flat";
+  let txt=change===null?"Mes base de esta comparación":`${change>0?"+":""}${fmt(change)} (${pct>0?"+":""}${pct.toFixed(1)}%) frente a ${prev.month.toLowerCase()}`;
+  return `<div class="metric"><div class="name">${names[j]}</div><div class="price">${fmt(v)}</div><div class="unit">por litro</div><div class="change ${c}">${txt}</div></div>`;
+ }).join("");
+ document.getElementById("chartTitle").textContent="Comparación de "+d.month.toLowerCase();
+ document.getElementById("chart").innerHTML=d.values.map((v,j)=>`<div class="barcol"><div class="barlabel">${v.toFixed(3)}</div><div class="bar" style="height:${v/1.6*185}px;background:${colors[j]}"></div><div class="barname">${names[j]}</div></div>`).join("");
+ const g95=d.values[0]-data[0].values[0],g91=d.values[1]-data[0].values[1],diesel=d.values[2]-data[0].values[2];
+ let highest=d.values.indexOf(Math.max(...d.values));
+ let insight=`<strong>¿Qué destaca en ${d.month.toLowerCase()}?</strong><p>El valor más alto entre los tres combustibles es el del <b>${names[highest]}</b>, con ${fmt(d.values[highest])} por litro.</p>`;
+ if(i===0) insight+=`<p>Este es el punto inicial. En julio, los tres valores de referencia se sitúan cerca de B/.1.10–1.17 por litro.</p>`;
+ if(i===1) insight+=`<p>Frente a julio, el diésel sube con más fuerza que las gasolinas. La diferencia del diésel es de ${fmt(diesel)} por litro.</p>`;
+ if(i===2) insight+=`<p>De julio a septiembre, la gasolina 95 aumenta ${fmt(g95)}, la gasolina 91 aumenta ${fmt(g91)} y el diésel aumenta ${fmt(diesel)} por litro.</p>`;
+ document.getElementById("insight").innerHTML=insight;
+ document.getElementById("tbody").innerHTML=data.map((r,j)=>`<tr><td>${r.month}</td>${r.values.map(v=>`<td>${fmt(v)}</td>`).join("")}</tr>`).join("");
+}
+document.querySelectorAll(".monthbtn").forEach(b=>b.addEventListener("click",()=>render(Number(b.dataset.month))));
+render(0);
+</script>
+</body></html>
